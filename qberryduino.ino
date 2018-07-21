@@ -82,8 +82,8 @@ void setup() {
     return;
   }
 
-  (String(DEVICE_IDENTITY_PREFIX) + String(_modem.getImei())).toCharArray(DEVICE_IDENTITY, DEVICE_IDENTITY_LENGTH);
-  _modem.sendMessage(_messaging.hello(DEVICE_IDENTITY, PASSWORD, DEVICE_MODEL));
+  /// (String(DEVICE_IDENTITY_PREFIX) + String(_modem.getImei())).toCharArray(DEVICE_IDENTITY, DEVICE_IDENTITY_LENGTH);
+  /// _modem.sendMessage(_messaging.hello(DEVICE_IDENTITY, PASSWORD, DEVICE_MODEL));
 
 }
 
@@ -104,6 +104,11 @@ void loop() {
     if (!_modem.sendMessage(_messaging.currBatt(DEVICE_IDENTITY, PASSWORD, DEVICE_MODEL, _cgnss.parseBatt(_modem.getBatteryStat())))) {
       reset();
     }
+
+    Serial.println("---");
+    Serial.println(_modem.getSMS(_cgnss.parseSMSIndex(_modem.getNextSMSIndex())));
+
+    // Serial.println(_modem.getNextSMS());
 
     // check for incoming sms
     // check for incoming tcp packets

@@ -134,7 +134,7 @@ class Modem
       printSent(message);
       delay(delayer);
 
-      static char ssBuffer2 [SS_BUFFER_SIZE];
+      static char ssBuffer2 [SS_BUFFER_SIZE] = "";
       // int i = 0;
       i = 0;
       while (ss.available() != 0) {
@@ -154,6 +154,81 @@ class Modem
       printReceived(ssBuffer2);
       return ssBuffer2;
     }
+
+
+    char * WriteLine3(String message, int delayer) {
+      clearSerial();
+      ss.println(message);
+      printSent(message);
+      delay(delayer);
+
+      static char ssBuffer2 [SS_BUFFER_SIZE] = "";
+      // int i = 0;
+      i = 0;
+      while (ss.available() != 0) {
+
+        if (i > 50) {
+          clearSerial();
+          break;
+        } else {
+          ichr = ss.read();
+          if (ichr != '\r'
+              && ichr != '\n'
+              && ichr != '\0'
+              && ichr != '\b'
+              && ichr != '\a'
+              && ichr != '\f'
+              && ichr != '\t'
+              && ichr != '\v') {
+            ssBuffer2[i] = ichr;
+            i++;
+          }
+        }
+
+
+      }
+      printReceived(ssBuffer2);
+      return ssBuffer2;
+    }
+
+
+    char * WriteLine4(String message, int delayer) {
+      clearSerial();
+      ss.println(message);
+      printSent(message);
+      delay(delayer);
+
+      static char ssBuffer2 [SS_BUFFER_SIZE] = "";
+      // int i = 0;
+      i = 0;
+      int commaCount = 0;
+      while (ss.available() != 0) {
+        ichr = ss.read();
+
+        if (ichr == ',') {
+          commaCount++;
+        }
+
+        if (commaCount > 4) {
+          if (ichr != '\r'
+              && ichr != '\n'
+              && ichr != '\0'
+              && ichr != '\b'
+              && ichr != '\a'
+              && ichr != '\f'
+              && ichr != '\t'
+              && ichr != '\v') {
+            ssBuffer2[i] = ichr;
+            i++;
+          }
+        }
+
+
+      }
+      printReceived(ssBuffer2);
+      return ssBuffer2;
+    }
+
 
     void printReceived(String text) {
       mainSerial.println(MODEM_TO_MC + text);
@@ -203,8 +278,28 @@ class Modem
       //return cgnssResp;
     }
 
-    char * getSMS() {
-      WriteLine2(F(""), DELAY_60);
+    char * getNextSMSIndex() {
+      //WriteLine2(F("AT+CMGF?"), DELAY_1000);
+      //delay(1000);
+      //WriteLine2(F("AT+CMGF=1"), DELAY_1000);
+      //delay(1000);
+      return WriteLine2(F("AT+CMGL=\"REC UNREAD\""), DELAY_1000);
+      //delay(1000);
+      //WriteLine2(F("AT+CMGR=31"), DELAY_1000);
+      //delay(1000);
+      //WriteLine2(F("AT+CMGD=31"), DELAY_1000);
+    }
+
+    char * getSMS(String index) {
+      //WriteLine2(F("AT+CMGF?"), DELAY_1000);
+      //delay(1000);
+      //WriteLine2(F("AT+CMGF=1"), DELAY_1000);
+      //delay(1000);
+      // return WriteLine3(F("AT+CMGL=\"REC UNREAD\""), DELAY_1000);
+      //delay(1000);
+      return WriteLine2("AT+CMGR=" + index, DELAY_60);
+      //delay(1000);
+      ///////////////////WriteLine2("AT+CMGD=" + index, DELAY_1000);
     }
 
     char * getBatteryStat() {

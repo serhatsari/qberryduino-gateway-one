@@ -42,6 +42,11 @@ class CGNSS {
         || lineIndex == 2;
     }
 
+    boolean isInSMSIndexIndexes(byte lineIndex) {
+      return
+        lineIndex == 1;
+    }
+
     void clear() {
       for (int i = 0; i < LINES_LENGTH; i++) {
         s[i] = "";
@@ -61,7 +66,7 @@ class CGNSS {
       for (rawCharIndex = 0; rawCharIndex < String(rawBattData).length(); rawCharIndex++) {
 
         if (rawBattData[rawCharIndex] == SEPERATOR) {
-          
+
           if (isInBattIndexes(lineIndex)) {
             actualLineIndex++;
           }
@@ -108,6 +113,33 @@ class CGNSS {
       }
 
       return s;
+    }
+
+    String parseSMSIndex(char* rawNMEAData) {
+
+      clear();
+
+      actualLineIndex = 0;
+      lineIndex = 0;
+      rawCharIndex = 0;
+
+      for (rawCharIndex = 0; rawCharIndex < String(rawNMEAData).length(); rawCharIndex++) {
+
+        if (rawNMEAData[rawCharIndex] == SEPERATOR || rawNMEAData[rawCharIndex] == ':') {
+          if (isInSMSIndexIndexes(lineIndex)) {
+            actualLineIndex++;
+          }
+
+          lineIndex++;
+          continue;
+        }
+
+        if (isInSMSIndexIndexes(lineIndex) && rawNMEAData[rawCharIndex] != ' ') {
+          s[actualLineIndex] += String(rawNMEAData[rawCharIndex]);
+        }
+      }
+
+      return s[0];
     }
 };
 
